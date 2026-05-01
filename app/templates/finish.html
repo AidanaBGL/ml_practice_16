@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card">
+  <h1>Готово, {{ attempt.name }}!</h1>
+  <p class="bigscore">Итог: <b>{{ "%.1f"|format(attempt.score) }}</b> очков</p>
+  <p>
+    <a href="/leaderboard">Посмотреть лидерборд</a> ·
+    <a href="/">Перепройти</a>
+  </p>
+
+  <h3>Разбор по вопросам</h3>
+  <table class="answers">
+    <tr><th>Вопрос</th><th>Доля</th><th>Время, с</th><th>Бонус</th><th>Очки</th></tr>
+    {% for r in answers %}
+      <tr>
+        <td>{{ r.question_id }}</td>
+        <td>{{ "%.0f%%"|format(r.correct_ratio * 100) }}</td>
+        <td>{{ "%.1f"|format(r.elapsed_s) }}</td>
+        <td>{{ "+50%" if r.speed_bonus else "—" }}</td>
+        <td>{{ "%.1f"|format(r.earned_points) }}</td>
+      </tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}

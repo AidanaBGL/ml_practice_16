@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="qmeta">
+  <div>Вопрос {{ idx + 1 }} / {{ total }}</div>
+  <div class="timer" data-secs="{{ secs_left }}">⏱ <span id="t">--:--</span></div>
+</div>
+<div class="card">
+  <h2>{{ q.title }}</h2>
+  {% if q.body %}<p class="body">{{ q.body }}</p>{% endif %}
+
+  <form method="post" action="/q/{{ idx }}" id="qform">
+
+    {# ---------- single ---------- #}
+    {% if q.type == "single" %}
+      {% for value, label in q.data.options %}
+        <label class="opt">
+          <input type="radio" name="choice" value="{{ value }}" required>
+          <span>{{ label }}</span>
+        </label>
+      {% endfor %}
+
+    {# ---------- multi ---------- #}
+    {% elif q.type == "multi" %}
+      {% for value, label in q.data.options %}
+        <label class="opt">
+          <input type="checkbox" name="choices" value="{{ value }}">
+          <span>{{ label }}</span>
+        </label>
+      {% endfor %}
+
+    {# ---------- match ---------- #}
+    {% elif q.type == "match" %}
+      <table class="match">
+        {% for lkey, llabel in q.data.left %}
+          <tr>
+            <td>{{ llabel }}</td>
+            <td>
+              <select name="match_{{ lkey }}" required>
+                <option value="">—</option>
+                {% for rkey, rlabel in q.data.right %}
+                  <option value="{{ rkey }}">{{ rlabel }}</option>
+                {% endfor %}
+              </select>
+            </td>
+          </tr>
+        {% endfor %}
+      </table>
+
+    {# ---------- order ---------- #}
+    {% elif q.type == "order" %}
+      <ul id="sortlist" class="sortlist">
+        {% for key, label in q.data["items"] %}
+          <li data-key="{{ key }}">{{ label }}</li>
+        {% endfor %}
+      </ul>
+      <input type="hidden" name="order" id="orderfield">
+      <script>
+        new Sortable(document.getElementById('sortlist'), {
+          animation: 150,
+          onSort: syncOrder,
+        });
+        function syncOrder() {
+          const keys = [...document.querySelectorAll('#sortlist li')].map(li => li.dataset.key);
+          document.getElementById('orderfield').value = keys.join(',');
+        }
+        document.getElementById('qform').addEventListener('submit', syncOrder);
+        syncOrder();
+      </script>
+
+    {# ---------- bins ---------- #}
+    {% elif q.type == "bins" %}
+      <div class="bins">
+        <div class="bin">
+          <h4>Карман</h4>
+          <ul id="pool" class="droplist">
+            {% for key, label in q.data["items"] %}
+              <li data-key="{{ key }}">{{ label }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+        {% for bkey, blabel in q.data.bins %}
+          <div class="bin">
+            <h4>{{ blabel }}</h4>
+            <ul id="bin_{{ bkey }}" class="droplist" data-bin="{{ bkey }}"></ul>
+            <input type="hidden" name="bin_{{ bkey }}" id="binval_{{ bkey }}">
+          </div>
+        {% endfor %}
+      </div>
+      <script>
+        const groupName = "binsgroup";
+        document.querySelectorAll('.droplist').forEach(el => {
+          new Sortable(el, {group: groupName, animation: 120, onSort: syncBins});
+        });
+        function syncBins() {
+          document.querySelectorAll('[id^="binval_"]').forEach(input => {
+            const binId = input.id.replace('binval_', '');
+            const list = document.getElementById('bin_' + binId);
+            const keys = [...list.querySelectorAll('li')].map(li => li.dataset.key);
+            input.value = keys.join(',');
+          });
+        }
+        document.getElementById('qform').addEventListener('submit', syncBins);
+        syncBins();
+      </script>
+
+    {# ---------- code_fill ---------- #}
+    {% elif q.type == "code_fill" %}
+      <pre class="code">{{ q.data.template }}</pre>
+      <div class="blanks">
+        {% for bid, hint in q.data.blanks %}
+          <label class="blank">
+            <span class="bid">___{{ bid }}___</span>
+            <input type="text" name="blank_{{ bid }}" placeholder="{{ hint }}" autocomplete="off" spellcheck="false">
+          </label>
+        {% endfor %}
+      </div>
+
+    {# ---------- sabotage ---------- #}
+    {% elif q.type == "sabotage" %}
+      <div class="sabotage">
+        {% for line in q.data.code_lines %}
+          <label class="codeline">
+            <input type="radio" name="line" value="{{ loop.index0 }}" required>
+            <span class="ln">{{ "%2d"|format(loop.index0) }}</span>
+            <code>{{ line if line else " " }}</code>
+          </label>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <div class="actions">
+      <button type="submit">Ответить →</button>
+      <span class="bonus-hint">+{{ speed_bonus_pct }}% если уложишься за {{ speed_window }} сек</span>
+    </div>
+  </form>
+</div>
+
+<script>
+  // global timer
+  (function(){
+    const el = document.querySelector('.timer');
+    if (!el) return;
+    let secs = parseInt(el.dataset.secs, 10) || 0;
+    const span = document.getElementById('t');
+    function tick() {
+      const m = Math.floor(secs / 60), s = secs % 60;
+      span.textContent = `${m}:${String(s).padStart(2,'0')}`;
+      if (secs <= 0) { window.location.href = '/finish'; return; }
+      secs -= 1;
+    }
+    tick();
+    setInterval(tick, 1000);
+  })();
+</script>
+{% endblock %}

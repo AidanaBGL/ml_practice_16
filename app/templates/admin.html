@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card">
+  <h1>Админ — все попытки</h1>
+  <p><a href="/admin/export.csv?key={{ key }}">⬇ Скачать CSV</a></p>
+  <table class="board">
+    <tr><th>#</th><th>Имя</th><th>Старт</th><th>Финиш</th><th>Очки</th></tr>
+    {% for a in attempts %}
+      <tr>
+        <td>{{ a.id }}</td>
+        <td>{{ a.name }}</td>
+        <td>{{ a.started_at.strftime("%H:%M:%S") }}</td>
+        <td>{{ a.finished_at.strftime("%H:%M:%S") if a.finished_at else "в процессе" }}</td>
+        <td>{{ "%.1f"|format(a.score) }}</td>
+      </tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}
