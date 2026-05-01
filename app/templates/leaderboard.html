@@ -5,14 +5,16 @@
   {% if not board %}
     <p>Пока никто не закончил — будь первым!</p>
   {% else %}
+    <p class="muted">Сортировка: по очкам ↓, при равенстве — кто быстрее прошёл.</p>
     <table class="board">
-      <tr><th>#</th><th>Имя</th><th>Очки</th><th>Завершено</th></tr>
-      {% for a in board %}
-        <tr {% if loop.index == 1 %}class="gold"{% elif loop.index == 2 %}class="silver"{% elif loop.index == 3 %}class="bronze"{% endif %}>
-          <td>{{ loop.index }}</td>
-          <td>{{ a.name }}</td>
-          <td>{{ "%.1f"|format(a.score) }}</td>
-          <td>{{ a.finished_at.strftime("%H:%M:%S") if a.finished_at else "—" }}</td>
+      <tr><th>#</th><th>Имя</th><th>Очки</th><th>За сколько</th><th>Финиш (UTC)</th></tr>
+      {% for row in board %}
+        <tr {% if row.rank == 1 %}class="gold"{% elif row.rank == 2 %}class="silver"{% elif row.rank == 3 %}class="bronze"{% endif %}>
+          <td>{{ row.rank }}</td>
+          <td>{{ row.name }}</td>
+          <td>{{ "%.1f"|format(row.score) }}</td>
+          <td>{{ row.duration_str }}</td>
+          <td>{{ row.finished_at.strftime("%H:%M:%S") if row.finished_at else "—" }}</td>
         </tr>
       {% endfor %}
     </table>

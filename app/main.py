@@ -21,6 +21,7 @@ BASE = Path(__file__).resolve().parent
 
 ADMIN_KEY = os.environ.get("ADMIN_KEY", "change-me")
 QUIZ_DURATION_MIN = int(os.environ.get("QUIZ_DURATION_MIN", "60"))
+QUESTIONS_PER_ATTEMPT = int(os.environ.get("QUESTIONS_PER_ATTEMPT", "12"))
 ATTEMPT_COOKIE = "attempt_id"
 COOKIE_SECRET = os.environ.get("COOKIE_SECRET", secrets.token_hex(16))
 
@@ -83,8 +84,9 @@ def start(request: Request, name: str = Form(...)):
     if not name:
         return RedirectResponse("/", status_code=303)
 
-    qids = [q.id for q in QUESTIONS]
-    random.shuffle(qids)
+    pool = [q.id for q in QUESTIONS]
+    k = min(QUESTIONS_PER_ATTEMPT, len(pool))
+    qids = random.sample(pool, k)
 
     with get_session() as s:
         a = Attempt(name=name, question_order=qids, cur_index=0)
@@ -230,26 +232,61 @@ def finish(request: Request):
         rows = s.exec(select(Answer).where(Answer.attempt_id == a.id)).all()
     return templates.TemplateResponse(
         "finish.html",
-        {"request": request, "attempt": a, "answers": rows},
+        {
+            "request": request,
+            "attempt": a,
+            "answers": rows,
+            "duration_str": _fmt_duration(_duration_s(a)),
+        },
     )
+
+
+def _duration_s(a: Attempt) -> int:
+    if not (a.started_at and a.finished_at):
+        return 10**9
+    return int((a.finished_at - a.started_at).total_seconds())
+
+
+def _fmt_duration(secs: int) -> str:
+    if secs >= 10**9:
+        return "—"
+    return f"{secs // 60}:{secs % 60:02d}"
+
+
+def _attempt_key(a: Attempt) -> tuple[float, int]:
+    # Higher score first; faster time wins ties.
+    return (-a.score, _duration_s(a))
 
 
 @app.get("/leaderboard", response_class=HTMLResponse)
 def leaderboard(request: Request):
     with get_session() as s:
-        # Best attempt per name
         rows = s.exec(
             select(Attempt).where(Attempt.finished_at.is_not(None))
         ).all()
+
     best: dict[str, Attempt] = {}
     for r in rows:
         cur = best.get(r.name)
-        if cur is None or r.score > cur.score:
+        if cur is None or _attempt_key(r) < _attempt_key(cur):
             best[r.name] = r
-    board = sorted(best.values(), key=lambda a: a.score, reverse=True)
+
+    board = sorted(best.values(), key=_attempt_key)
+    board_view = [
+        {
+            "rank": i + 1,
+            "name": a.name,
+            "score": a.score,
+            "duration_s": _duration_s(a),
+            "duration_str": _fmt_duration(_duration_s(a)),
+            "finished_at": a.finished_at,
+        }
+        for i, a in enumerate(board)
+    ]
+
     return templates.TemplateResponse(
         "leaderboard.html",
-        {"request": request, "board": board},
+        {"request": request, "board": board_view},
     )
 
 
@@ -259,9 +296,20 @@ def admin(request: Request, key: str = ""):
         raise HTTPException(403, "Bad admin key")
     with get_session() as s:
         attempts = s.exec(select(Attempt).order_by(Attempt.score.desc())).all()
+    rows_view = [
+        {
+            "id": a.id,
+            "name": a.name,
+            "started_at": a.started_at,
+            "finished_at": a.finished_at,
+            "score": a.score,
+            "duration_str": _fmt_duration(_duration_s(a)) if a.finished_at else "в процессе",
+        }
+        for a in attempts
+    ]
     return templates.TemplateResponse(
         "admin.html",
-        {"request": request, "attempts": attempts, "key": key},
+        {"request": request, "attempts": rows_view, "key": key},
     )
 
 
@@ -281,19 +329,20 @@ def export_csv(key: str = ""):
     buf = io.StringIO()
     w = csv.writer(buf)
     w.writerow([
-        "attempt_id", "name", "started_at", "finished_at", "score",
+        "attempt_id", "name", "started_at", "finished_at", "duration_s", "score",
         "question_id", "correct_ratio", "earned_points", "elapsed_s",
         "speed_bonus", "payload",
     ])
     for a in attempts:
+        dur = _duration_s(a) if a.finished_at else ""
         rows = by_attempt.get(a.id, [])
         if not rows:
-            w.writerow([a.id, a.name, a.started_at, a.finished_at, a.score,
+            w.writerow([a.id, a.name, a.started_at, a.finished_at, dur, a.score,
                         "", "", "", "", "", ""])
             continue
         for r in rows:
             w.writerow([
-                a.id, a.name, a.started_at, a.finished_at, a.score,
+                a.id, a.name, a.started_at, a.finished_at, dur, a.score,
                 r.question_id, r.correct_ratio, r.earned_points,
                 round(r.elapsed_s, 2), r.speed_bonus, r.payload,
             ])

@@ -33,7 +33,7 @@ QUESTIONS: list[Question] = [
         id="q01_terms",
         type="match",
         title="Сопоставь термин и определение",
-        body="К каждому понятию слева — подходящее определение справа.",
+        body="Задание: для каждого понятия слева выбери в выпадающем списке справа подходящее определение.",
         data={
             "left": [
                 ("PCA", "PCA"),
@@ -55,7 +55,7 @@ QUESTIONS: list[Question] = [
         id="q02_why_dimred",
         type="multi",
         title="Зачем нужно снижать размерность?",
-        body="Выбери всё, что относится к причинам.",
+        body="Задание: отметь галочками все варианты, которые являются реальной причиной. Несколько ответов могут быть правильными.",
         data={
             "options": [
                 ("vis", "Визуализация в 2D/3D"),
@@ -73,7 +73,7 @@ QUESTIONS: list[Question] = [
         id="q03_pca_goal",
         type="single",
         title="Цель PCA — это…",
-        body="",
+        body="Задание: выбери ровно один правильный вариант.",
         data={
             "options": [
                 ("var", "Найти направления максимальной дисперсии"),
@@ -89,7 +89,7 @@ QUESTIONS: list[Question] = [
         id="q04_pca_steps",
         type="order",
         title="Расставь шаги PCA по порядку",
-        body="От первого к последнему.",
+        body="Задание: перетащи карточки так, чтобы шаги шли от первого к последнему сверху вниз.",
         data={
             "items": [
                 ("center", "Центрирование: вычесть среднее по признакам"),
@@ -106,7 +106,7 @@ QUESTIONS: list[Question] = [
         id="q05_choose_k",
         type="multi",
         title="Как выбрать K компонент?",
-        body="Выбери все валидные подходы.",
+        body="Задание: отметь галочками все валидные подходы к выбору числа компонент K. Несколько ответов могут быть правильными.",
         data={
             "options": [
                 ("elbow", "Метод локтя на explained_variance_ratio_"),
@@ -122,8 +122,8 @@ QUESTIONS: list[Question] = [
     Question(
         id="q06_pros_cons",
         type="bins",
-        title="Перетащи характеристики в плюсы и минусы PCA",
-        body="",
+        title="Плюсы и минусы PCA",
+        body="Задание: перетащи каждую карточку из левой колонки «Карман» в нужный столбец — «Плюсы PCA» или «Минусы PCA».",
         data={
             "bins": [("pros", "Плюсы PCA"), ("cons", "Минусы PCA")],
             "items": [
@@ -151,7 +151,7 @@ QUESTIONS: list[Question] = [
         type="code_fill",
         title="Допиши PCA",
         body="""Тебя позвали в стартап с датасетом из 200 признаков.
-Допиши код так, чтобы получить 10 компонент и применить к новым данным.""",
+Задание: впиши в каждое поле ___1___, ___2___, ___3___ ровно тот фрагмент кода, который должен быть на этом месте, чтобы получить 10 компонент и применить к новым данным.""",
         data={
             "template": (
                 "from sklearn.decomposition import PCA\n"
@@ -183,7 +183,7 @@ QUESTIONS: list[Question] = [
         id="q08_variance_code",
         type="code_fill",
         title="PCA по доле дисперсии",
-        body="Хотим оставить 95% дисперсии — допиши.",
+        body="Задание: впиши в поля ___1___ и ___2___ нужный код, чтобы оставить 95% дисперсии и применить преобразование к X_sc.",
         data={
             "template": (
                 "pca = ___1___\n"
@@ -204,7 +204,7 @@ QUESTIONS: list[Question] = [
         id="q09_tsne_truth",
         type="single",
         title="Что верно про t-SNE?",
-        body="",
+        body="Задание: выбери ровно один правильный вариант.",
         data={
             "options": [
                 ("nbrs", "Сохраняет локальную структуру: близкие соседи остаются близкими"),
@@ -220,8 +220,7 @@ QUESTIONS: list[Question] = [
         id="q10_sabotage_pca",
         type="sabotage",
         title="Sabotage round: найди баг",
-        body="""В коде ровно одна ошибка, которая ломает результат.
-Какая строка виновна?""",
+        body="Задание: в коде ровно одна ошибка, которая ломает результат. Кликни по той строке, которая виновата.",
         data={
             "code_lines": [
                 "from sklearn.decomposition import PCA",
@@ -243,7 +242,7 @@ QUESTIONS: list[Question] = [
         id="q11_sabotage_tsne",
         type="sabotage",
         title="Sabotage round: t-SNE",
-        body="Один из шагов делает плохо. Какой?",
+        body="Задание: один из шагов написан неправильно и упадёт или даст бессмысленный результат. Кликни по виноватой строке.",
         data={
             "code_lines": [
                 "from sklearn.manifold import TSNE",
@@ -264,7 +263,7 @@ QUESTIONS: list[Question] = [
         id="q12_umap_code",
         type="code_fill",
         title="UMAP для визуализации",
-        body="2D-визуализация, n_neighbors=15, min_dist=0.1, фиксированный seed.",
+        body="Задание: впиши в поля ___1___ и ___2___ код для 2D-визуализации с n_neighbors=15, min_dist=0.1, фиксированным seed=42.",
         data={
             "template": (
                 "import umap\n"
@@ -275,8 +274,8 @@ QUESTIONS: list[Question] = [
                 "X_umap = ___2___\n"
             ),
             "blanks": [
-                ("1", "umap.UMAP(...)"),
-                ("2", "fit_transform"),
+                ("1", ""),
+                ("2", ""),
             ],
         },
         correct={
@@ -286,6 +285,155 @@ QUESTIONS: list[Question] = [
             ],
             "2": ["reducer.fit_transform(x_sc)"],
         },
+    ),
+
+    Question(
+        id="q13_evr",
+        type="single",
+        title="Что показывает pca.explained_variance_ratio_?",
+        body="Задание: выбери ровно один правильный вариант.",
+        data={
+            "options": [
+                ("ratio", "Долю общей дисперсии, которую объясняет каждая компонента"),
+                ("eig", "Сами собственные значения ковариационной матрицы"),
+                ("mean", "Среднее по признакам после центрирования"),
+                ("acc", "Точность модели после применения PCA"),
+            ],
+        },
+        correct="ratio",
+    ),
+
+    Question(
+        id="q14_sabotage_ncomp",
+        type="sabotage",
+        title="Sabotage round: PCA на маленьком датасете",
+        body="Задание: одна строка приведёт к ошибке или некорректному результату. Кликни по виноватой.",
+        data={
+            "code_lines": [
+                "import numpy as np",
+                "from sklearn.decomposition import PCA",
+                "from sklearn.preprocessing import StandardScaler",
+                "",
+                "X = np.random.randn(50, 20)",
+                "X_sc = StandardScaler().fit_transform(X)",
+                "",
+                "pca = PCA(n_components=100, random_state=42)",
+                "X_pca = pca.fit_transform(X_sc)",
+            ],
+        },
+        correct=7,  # n_components > min(n_samples, n_features)
+    ),
+
+    Question(
+        id="q15_when_tsne",
+        type="multi",
+        title="Когда лучше выбрать t-SNE, а не PCA?",
+        body="Задание: отметь все ситуации, в которых t-SNE подходит лучше PCA. Несколько ответов могут быть правильными.",
+        data={
+            "options": [
+                ("vis2d", "Хочется визуализацию в 2D, где соседи остаются соседями"),
+                ("clusters", "Нужно увидеть кластерную структуру данных"),
+                ("nonlinear", "В данных явно нелинейная структура"),
+                ("global", "Нужно сохранить глобальные расстояния между всеми точками"),
+                ("predict", "Нужно применить преобразование к новым точкам через .transform()"),
+                ("speed", "Нужен максимально быстрый и детерминированный метод"),
+            ],
+        },
+        correct=["vis2d", "clusters", "nonlinear"],
+    ),
+
+    Question(
+        id="q16_perplexity",
+        type="single",
+        title="Что контролирует perplexity в t-SNE?",
+        body="Задание: выбери ровно один правильный вариант.",
+        data={
+            "options": [
+                ("nbrs", "Эффективное число соседей, которое t-SNE учитывает для каждой точки"),
+                ("lr", "Скорость обучения градиентного спуска"),
+                ("seed", "Случайное зерно генератора"),
+                ("iters", "Количество итераций оптимизации"),
+            ],
+        },
+        correct="nbrs",
+    ),
+
+    Question(
+        id="q17_methods_match",
+        type="match",
+        title="Сопоставь метод и его сильную сторону",
+        body="Задание: для каждого метода слева выбери в списке справа его главное преимущество.",
+        data={
+            "left": [
+                ("PCA", "PCA"),
+                ("TSNE", "t-SNE"),
+                ("UMAP", "UMAP"),
+                ("IncrementalPCA", "IncrementalPCA"),
+            ],
+            "right": [
+                ("a", "Линейный, быстрый, есть .transform() и обратное преобразование"),
+                ("b", "Визуализация локальной структуры в 2D/3D"),
+                ("c", "Нелинейный, есть .transform(), supervised-режим"),
+                ("d", "Обучение по батчам — для очень больших данных"),
+            ],
+        },
+        correct={"PCA": "a", "TSNE": "b", "UMAP": "c", "IncrementalPCA": "d"},
+    ),
+
+    Question(
+        id="q18_evr_code",
+        type="single",
+        title="Сколько компонент нужно для 95% дисперсии?",
+        body="Задание: выбери код, который корректно считает минимальное число компонент для покрытия 95% дисперсии.",
+        data={
+            "options": [
+                ("cumsum", "np.argmax(np.cumsum(pca.explained_variance_ratio_) >= 0.95) + 1"),
+                ("sum", "np.sum(pca.explained_variance_ratio_ >= 0.95)"),
+                ("where", "np.where(pca.explained_variance_ratio_ > 0.95)[0][0]"),
+                ("ratio", "int(len(pca.explained_variance_ratio_) * 0.95)"),
+            ],
+        },
+        correct="cumsum",
+    ),
+
+    Question(
+        id="q19_umap_advantages",
+        type="multi",
+        title="Чем UMAP лучше t-SNE на практике?",
+        body="Задание: отметь все реальные преимущества UMAP. Несколько ответов могут быть правильными.",
+        data={
+            "options": [
+                ("transform", "Есть .transform() для новых точек"),
+                ("supervised", "Есть supervised-режим (UMAP с y=labels)"),
+                ("speed", "Обычно работает быстрее t-SNE на больших датасетах"),
+                ("global", "Лучше сохраняет глобальную структуру"),
+                ("det", "Полностью детерминирован без random_state"),
+                ("linear", "Линейная модель"),
+            ],
+        },
+        correct=["transform", "supervised", "speed", "global"],
+    ),
+
+    Question(
+        id="q20_sabotage_umap",
+        type="sabotage",
+        title="Sabotage round: UMAP train/test",
+        body="Задание: одна строка делает плохо для пайплайна с трейном и тестом. Кликни по виноватой.",
+        data={
+            "code_lines": [
+                "import umap",
+                "from sklearn.preprocessing import StandardScaler",
+                "",
+                "scaler = StandardScaler().fit(X_train)",
+                "X_train_sc = scaler.transform(X_train)",
+                "X_test_sc  = scaler.transform(X_test)",
+                "",
+                "reducer = umap.UMAP(n_components=2, random_state=42)",
+                "X_train_umap = reducer.fit_transform(X_train_sc)",
+                "X_test_umap  = reducer.fit_transform(X_test_sc)",
+            ],
+        },
+        correct=9,  # should be reducer.transform(X_test_sc)
     ),
 ]
 

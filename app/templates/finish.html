@@ -3,6 +3,7 @@
 <div class="card">
   <h1>Готово, {{ attempt.name }}!</h1>
   <p class="bigscore">Итог: <b>{{ "%.1f"|format(attempt.score) }}</b> очков</p>
+  <p class="muted">Прошёл за <b>{{ duration_str }}</b></p>
   <p>
     <a href="/leaderboard">Посмотреть лидерборд</a> ·
     <a href="/">Перепройти</a>
