@@ -220,7 +220,7 @@ QUESTIONS: list[Question] = [
         id="q10_sabotage_pca",
         type="sabotage",
         title="Sabotage round: найди баг",
-        body="Задание: в коде ровно одна ошибка, которая ломает результат. Кликни по той строке, которая виновата.",
+        body="Задание: в коде ровно одна ошибка, которая ломает результат. Кликни по строке.",
         data={
             "code_lines": [
                 "from sklearn.decomposition import PCA",
@@ -242,7 +242,7 @@ QUESTIONS: list[Question] = [
         id="q11_sabotage_tsne",
         type="sabotage",
         title="Sabotage round: t-SNE",
-        body="Задание: один из шагов написан неправильно и упадёт или даст бессмысленный результат. Кликни по виноватой строке.",
+        body="Задание: один из шагов написан неправильно и упадёт или даст бессмысленный результат. Кликни по строке.",
         data={
             "code_lines": [
                 "from sklearn.manifold import TSNE",
@@ -307,7 +307,7 @@ QUESTIONS: list[Question] = [
         id="q14_sabotage_ncomp",
         type="sabotage",
         title="Sabotage round: PCA на маленьком датасете",
-        body="Задание: одна строка приведёт к ошибке или некорректному результату. Кликни по виноватой.",
+        body="Задание: одна строка приведёт к ошибке или некорректному результату. Кликни по ней.",
         data={
             "code_lines": [
                 "import numpy as np",
@@ -418,7 +418,7 @@ QUESTIONS: list[Question] = [
         id="q20_sabotage_umap",
         type="sabotage",
         title="Sabotage round: UMAP train/test",
-        body="Задание: одна строка делает плохо для пайплайна с трейном и тестом. Кликни по виноватой.",
+        body="Задание: одна строка делает плохо для пайплайна с трейном и тестом. Кликни по ней.",
         data={
             "code_lines": [
                 "import umap",
