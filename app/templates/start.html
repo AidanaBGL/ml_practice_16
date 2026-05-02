@@ -1,19 +1,16 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="card narrative">
-  <h1>Стажёрский тест в стартапе DimReduce.AI</h1>
-  <p>Тебя позвали на стажировку. Дата-сет уже на столе: 200 признаков, 100k наблюдений.
-  Сегодня твой первый day — нужно показать, что ты понимаешь, зачем существуют PCA, t-SNE и UMAP.</p>
+  <h1>PCA test</h1>
   <p>Правила:</p>
   <ul>
     <li>На всё про всё — <b>{{ 60 }} минут</b>. Таймер общий, не на вопрос.</li>
-    <li>За правильный ответ — баллы, плюс <b>+50% скоростной бонус</b>, если уложился в окно времени.</li>
+    <li>За правильный ответ — баллы, плюс <b>+50% скоростной бонус</b>, если уложился в 30 cek.</li>
     <li>Можно перепройти — лидерборд сохраняет твой <b>лучший</b> результат.</li>
-    <li>Вопросы идут в случайном порядке — у соседа другой набор сверху.</li>
   </ul>
   <form action="/start" method="post" class="start-form">
-    <label>Как тебя записать на доске почёта?
-      <input name="name" required maxlength="48" autocomplete="off" placeholder="Например: Aidana Б.">
+    <label>Напишите свое имя?
+      <input name="name" required maxlength="48" autocomplete="off" placeholder="Например: Айдана Багланова">
     </label>
     <button type="submit">Начать →</button>
   </form>
